@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=3 uid="uid://csivgpahurgev"]
+
+[ext_resource type="Script" uid="uid://bprmv1urt77ap" path="res://character_body_2d.gd" id="1_g2els"]
+[ext_resource type="Texture2D" uid="uid://cho56xjnr42ou" path="res://assets/sprites/characters/mHero_/idle_/rIdle_0.png" id="2_qhqgy"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_dqkch"]
+radius = 5.0
+height = 14.0
+
+[node name="Node2D" type="Node2D"]
+
+[node name="CharacterBody2D" type="CharacterBody2D" parent="."]
+position = Vector2(231, 48)
+motion_mode = 1
+script = ExtResource("1_g2els")
+
+[node name="Sprite2D" type="Sprite2D" parent="CharacterBody2D"]
+texture = ExtResource("2_qhqgy")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
+position = Vector2(0, 5)
+shape = SubResource("CapsuleShape2D_dqkch")
