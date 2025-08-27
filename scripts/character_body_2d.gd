@@ -1,6 +1,5 @@
 extends CharacterBody2D
 
-
 const SPEED = 300.0
 
 func _get_direction_input():
@@ -10,3 +9,4 @@ func _get_direction_input():
 func _physics_process(_delta: float) -> void:
 	_get_direction_input()
 	move_and_slide()
+
