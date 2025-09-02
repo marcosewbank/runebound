@@ -12,5 +12,6 @@ func _init() -> void:
 		class_hp,
 		class_mana,
 		class_speed,
-		class_damage
+		class_damage,
+		BaseCharacter.CustomClass.KNIGHT
 	)
