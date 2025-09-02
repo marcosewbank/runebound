@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://3sd64b00x4wa"
-path="res://.godot/imported/staff_.png-9b28d2acec59e782a4d4dee74f1e4a50.ctex"
+uid="uid://d3ijwm2tjfyub"
+path="res://.godot/imported/hammer_.png-39ed6ecc0add4177ef043c21218bf837.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/characters/staff_.png"
-dest_files=["res://.godot/imported/staff_.png-9b28d2acec59e782a4d4dee74f1e4a50.ctex"]
+source_file="res://assets/sprites/characters/weapons_/hammer_.png"
+dest_files=["res://.godot/imported/hammer_.png-39ed6ecc0add4177ef043c21218bf837.ctex"]
 
 [params]
 
