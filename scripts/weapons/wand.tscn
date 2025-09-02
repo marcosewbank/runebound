@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=3 uid="uid://c2ll8h4aogh5g"]
+
+[ext_resource type="Texture2D" uid="uid://3sd64b00x4wa" path="res://assets/sprites/characters/weapons_/staff_.png" id="1_7hs3y"]
+[ext_resource type="Script" uid="uid://c84buddnbr6a" path="res://scripts/weapons/wand.gd" id="1_n8vif"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_n8vif"]
+radius = 73.0
+height = 152.0
+
+[node name="Wand" type="Area2D"]
+script = ExtResource("1_n8vif")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CapsuleShape2D_n8vif")
+
+[node name="WeaponPivot" type="Marker2D" parent="."]
+
+[node name="Wand" type="Sprite2D" parent="WeaponPivot"]
+position = Vector2(15, 0)
+texture = ExtResource("1_7hs3y")
+
+[node name="ShootingPoint" type="Marker2D" parent="WeaponPivot/Wand"]
+position = Vector2(0, -8)

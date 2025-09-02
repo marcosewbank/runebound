@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cg6eed7moqora"
-path="res://.godot/imported/axe_.png-642f355d0de2746ec65c08a94ebb667b.ctex"
+uid="uid://crieuyrea21b1"
+path="res://.godot/imported/crosshair.png-9da9840bf8a975d7bc56e2a98b32a83b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/characters/axe_.png"
-dest_files=["res://.godot/imported/axe_.png-642f355d0de2746ec65c08a94ebb667b.ctex"]
+source_file="res://assets/sprites/crosshair.png"
+dest_files=["res://.godot/imported/crosshair.png-9da9840bf8a975d7bc56e2a98b32a83b.ctex"]
 
 [params]
 

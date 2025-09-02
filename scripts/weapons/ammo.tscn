@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3 uid="uid://bt46c32c28ayo"]
+
+[ext_resource type="Script" uid="uid://bxn3hw1jb3m23" path="res://scripts/weapons/ammo.gd" id="1_7wa7u"]
+[ext_resource type="Texture2D" uid="uid://bfpgjplgt68sa" path="res://assets/sprites/characters/weapons_/Fire Effect and Bullet 16x16.png" id="2_i3glu"]
+
+[node name="Ammo" type="Node2D"]
+script = ExtResource("1_7wa7u")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_i3glu")
+region_enabled = true
+region_rect = Rect2(49.6287, 96.9467, 14.4977, 15.6129)
+
+[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="."]
+scale = Vector2(3.375, 3.375)
+
+[connection signal="screen_exited" from="VisibleOnScreenNotifier2D" to="." method="_on_visible_on_screen_notifier_2d_screen_exited"]
