@@ -1,17 +1,19 @@
 extends BaseCharacter
 
-@export var class_hp: int = 80;
-@export var class_mana: int = 120;
-@export var class_speed: int = 8;
-@export var class_damage: int = 15;
+@export var c_name: String = "mage"
+@export var c_hp: int = 80;
+@export var c_mana: int = 120;
+@export var c_speed: int = 8;
+@export var c_damage: int = 15;
 
 var char: BaseCharacter;
 
 func _init() -> void:
 	super._init(
-		class_hp,
-		class_mana,
-		class_speed,
-		class_damage,
+		c_name,
+		c_hp,
+		c_mana,
+		c_speed,
+		c_damage,
 		BaseCharacter.CustomClass.MAGE
 	)
