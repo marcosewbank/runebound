@@ -1,6 +1,6 @@
 extends Area2D
 
-const BULLET = preload("res://scripts/weapons/ammo.tscn")
+const BULLET = preload("res://scenes/ammo.tscn")
 
 @onready var shooting_point: Marker2D = $WeaponPivot/Wand/ShootingPoint
 

@@ -1,12 +1,14 @@
 extends BaseCharacter
 
+class_name KnightCharacter
+
 @export var c_name: String = "knight"
 @export var c_hp: int = 150;
 @export var c_mana: int = 20;
 @export var c_speed: int = 10;
 @export var c_damage: int = 12;
 
-var char: BaseCharacter;
+var character: BaseCharacter;
 
 func _init() -> void:
 	super._init(
