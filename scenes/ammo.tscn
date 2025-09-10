@@ -1,4 +1,4 @@
-[gd_scene load_steps=3 format=3 uid="uid://bt46c32c28ayo"]
+[gd_scene load_steps=3 format=3 uid="uid://dv525v6txdfrd"]
 
 [ext_resource type="Script" uid="uid://bxn3hw1jb3m23" path="res://scripts/weapons/ammo.gd" id="1_7wa7u"]
 [ext_resource type="Texture2D" uid="uid://bfpgjplgt68sa" path="res://assets/sprites/characters/weapons_/Fire Effect and Bullet 16x16.png" id="2_i3glu"]

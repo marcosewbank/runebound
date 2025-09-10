@@ -21,6 +21,8 @@ var _class_type:			int;
 var _unnalloacted_points: 	int = 0;
 var _points_per_level:		int = 5;
 
+const SPEED = 300.0
+
 func _init(
 	p_name: 		String	= "none",
 	p_hp: 			int		= 100,
@@ -49,5 +51,16 @@ func take_damage(damage: int) -> bool:
 		_is_dead = true;
 	return _is_dead
 
-func _move() -> void:
-	pass
+
+func _get_direction_input():
+	var direction = Input.get_vector("walk_left", "walk_right", "walk_up", "walk_down")
+	velocity = direction * SPEED
+
+func _physics_process(_delta: float) -> void:
+	match _class_type:
+		CustomClass.ENEMY, CustomClass.BOSS:
+			pass
+		_:
+			_get_direction_input()
+			move_and_slide()
+

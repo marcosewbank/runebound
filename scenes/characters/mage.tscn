@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3 uid="uid://c7qxpv7tbgnmt"]
+
+[ext_resource type="Script" uid="uid://bqaglapp40c60" path="res://scripts/characters/mage.gd" id="1_janu0"]
+[ext_resource type="Texture2D" uid="uid://b7adjcimqljui" path="res://assets/sprites/characters/mHero_/walkRun_/lWalkRun_0.png" id="2_516ak"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_0fhyx"]
+radius = 6.0
+height = 16.0
+
+[node name="Mage" type="CharacterBody2D"]
+script = ExtResource("1_janu0")
+metadata/_custom_type_script = "uid://bqaglapp40c60"
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_516ak")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 2)
+shape = SubResource("CapsuleShape2D_0fhyx")

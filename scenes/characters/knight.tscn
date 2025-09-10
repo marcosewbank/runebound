@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3 uid="uid://cx0bnreetljex"]
+
+[ext_resource type="Script" uid="uid://b1n8ceryhnbw1" path="res://scripts/characters/knight.gd" id="1_gapps"]
+[ext_resource type="Texture2D" uid="uid://b3w21540lygpl" path="res://assets/sprites/characters/knight_/walkRun_/lWalkRun_0.png" id="2_wufdn"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_np6au"]
+radius = 6.0
+height = 16.0
+
+[node name="Knight" type="CharacterBody2D"]
+script = ExtResource("1_gapps")
+metadata/_custom_type_script = "uid://b1n8ceryhnbw1"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 2)
+shape = SubResource("CapsuleShape2D_np6au")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_wufdn")

@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bprmv1urt77ap" path="res://scripts/character_body_2d.gd" id="1_g2els"]
 [ext_resource type="Texture2D" uid="uid://cho56xjnr42ou" path="res://assets/sprites/characters/mHero_/idle_/rIdle_0.png" id="2_qhqgy"]
-[ext_resource type="PackedScene" uid="uid://c2ll8h4aogh5g" path="res://scripts/weapons/wand.tscn" id="3_qhqgy"]
+[ext_resource type="PackedScene" uid="uid://c3yu5c44vpu1p" path="res://scenes/wand.tscn" id="3_qhqgy"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_dqkch"]
 radius = 5.0
