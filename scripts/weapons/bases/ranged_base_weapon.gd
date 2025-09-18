@@ -3,8 +3,12 @@ extends BaseWeapon
 class_name RangedBaseWeapon
 
 const BULLET = preload("res://scenes/ammo.tscn")
+const base_damage: int = 1
 
 @onready var shooting_point: Marker2D = $WeaponPivot/Wand/ShootingPoint
+
+func _init() -> void:
+	damage += base_damage
 
 func _process(_delta: float) -> void:
 	look_at(get_global_mouse_position()	) 
