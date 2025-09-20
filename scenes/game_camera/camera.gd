@@ -1,29 +1,29 @@
 extends Camera2D
 
-var desired_offset: Vector2
-var min_offset = -200
-var max_offset = 200
+# You can now change these values in the Godot Inspector
+@export var follow_speed: float = 8.0
+@export var min_offset: float = -15.0
+@export var max_offset: float = 15.0
 
-var target_position = Vector2.ZERO
+var target_node: Node2D
 
 func _ready():
 	make_current()
+	# Find the player ONCE at the start, which is more efficient
+	target_node = get_tree().get_first_node_in_group("player") as Node2D
 
 func _process(delta: float) -> void:
-	desired_offset = (get_global_mouse_position() - position) * 0.5
-	desired_offset.x = clamp(desired_offset.x, min_offset, max_offset)
-	desired_offset.y = clamp(desired_offset.y, min_offset / 2.0, max_offset / 2.0)
-	
-	# TO-DO: Test this with tilemap. on gray screen it doesn't look good.
-	# global_position = acquire_target() + desired_offset
-	
-	
-	acquire_target()
-	global_position = global_position.lerp(target_position, 1.0 - exp(-delta * 10))
+	# If we don't have a target (e.g., player died), do nothing.
+	if not is_instance_valid(target_node):
+		return
 
-func acquire_target():
-	var player_nodes = get_tree().get_nodes_in_group("player")
-	if (player_nodes.size() > 0):
-		var player = player_nodes[0] as  Node2D
-		global_position = player.global_position
-		return player.global_position
+	# 1. Calculate where the camera SHOULD be (Player Position + Mouse Offset)
+	var mouse_offset = (get_global_mouse_position() - target_node.global_position) * 0.25
+	mouse_offset.x = clamp(mouse_offset.x, min_offset, max_offset)
+	mouse_offset.y = clamp(mouse_offset.y, min_offset / 2.0, max_offset / 2.0)
+	
+	var target_position = target_node.global_position + mouse_offset
+
+	# 2. Smoothly move the camera's actual position towards the target position
+	# The lerp function is simpler and very effective for this!
+	global_position = global_position.lerp(target_position, 1.0 - exp(-delta * follow_speed))
