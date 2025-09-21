@@ -1,7 +1,6 @@
 extends Node
 
-const MAX_RANGE = 150
-
+const MAX_RANGE = 200
 @export var sword_ability: PackedScene
 
 func _ready():
@@ -12,17 +11,18 @@ func on_timer_timeout():
 	if player == null:
 		return
 	
-	var enemies = get_tree().get_first_node_in_group('enemy')
+	var enemies = get_tree().get_nodes_in_group('enemy')
 	enemies = enemies.filter(func(enemy: Node2D): 
 		return enemy.global_position.distance_squared_to(player.global_position) < pow(MAX_RANGE, 2)
 	)
 	
+	print(enemies.size())
 	if enemies.size() == 0:
 		return
 	
 	enemies.sort_custom(func(a:Node2D, b: Node2D):
 		var a_distance = a.global_position.distance_squared_to(player.global_position)
-		var b_distance = a.global_position.distance_squared_to(player.global_position)
+		var b_distance = b.global_position.distance_squared_to(player.global_position)
 		return a_distance < b_distance
 	)
 #
