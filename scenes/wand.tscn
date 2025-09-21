@@ -4,8 +4,7 @@
 [ext_resource type="Script" uid="uid://c84buddnbr6a" path="res://scripts/weapons/types/wand.gd" id="1_n8vif"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_n8vif"]
-radius = 73.0
-height = 152.0
+height = 20.0
 
 [node name="Wand" type="Area2D"]
 script = ExtResource("1_n8vif")

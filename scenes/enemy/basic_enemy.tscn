@@ -1,0 +1,18 @@
+[gd_scene load_steps=4 format=3 uid="uid://mf8s5rtmlxfs"]
+
+[ext_resource type="Texture2D" uid="uid://c48eqjm2ueoou" path="res://assets/sprites/characters/slime_/idle_/lIdle_0.png" id="1_mgruy"]
+[ext_resource type="Script" uid="uid://dlpxih2x5ap5u" path="res://scenes/enemy/basic_enemy.gd" id="1_obku4"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_obku4"]
+size = Vector2(8, 10)
+
+[node name="BasicEnemy" type="CharacterBody2D"]
+collision_layer = 0
+script = ExtResource("1_obku4")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_mgruy")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 6)
+shape = SubResource("RectangleShape2D_obku4")

@@ -1,20 +1,24 @@
 [gd_scene load_steps=5 format=3 uid="uid://csivgpahurgev"]
 
 [ext_resource type="Script" uid="uid://b6bgvkxpyw3sy" path="res://scenes/player/player.gd" id="1_gmlin"]
+[ext_resource type="PackedScene" uid="uid://dvcqbmmwu6s1x" path="res://scenes/ability/sword/sword_ability_controller.tscn" id="2_gmlin"]
 [ext_resource type="Texture2D" uid="uid://cho56xjnr42ou" path="res://assets/sprites/characters/mHero_/idle_/rIdle_0.png" id="2_qhqgy"]
-[ext_resource type="PackedScene" uid="uid://c3yu5c44vpu1p" path="res://scenes/wand.tscn" id="3_qhqgy"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_dqkch"]
 radius = 5.0
 height = 14.0
 
 [node name="Player" type="CharacterBody2D" groups=["player"]]
+collision_layer = 0
 script = ExtResource("1_gmlin")
+
+[node name="AbilityManager" type="Node" parent="."]
+
+[node name="SwordAbilityController" parent="AbilityManager" instance=ExtResource("2_gmlin")]
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("2_qhqgy")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 3)
 shape = SubResource("CapsuleShape2D_dqkch")
-
-[node name="Wand" parent="." instance=ExtResource("3_qhqgy")]

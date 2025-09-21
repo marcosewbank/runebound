@@ -1,6 +1,6 @@
 extends CharacterBody2D
 
-const MAX_SPEED = 200.0
+@export var MAX_SPEED = 200.0
 
 func _get_direction_input():
 	var direction = Input.get_vector("walk_left", "walk_right", "walk_up", "walk_down")

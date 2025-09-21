@@ -25,5 +25,4 @@ func _process(delta: float) -> void:
 	var target_position = target_node.global_position + mouse_offset
 
 	# 2. Smoothly move the camera's actual position towards the target position
-	# The lerp function is simpler and very effective for this!
 	global_position = global_position.lerp(target_position, 1.0 - exp(-delta * follow_speed))
