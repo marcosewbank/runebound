@@ -10,7 +10,10 @@ height = 14.0
 
 [node name="Player" type="CharacterBody2D" groups=["player"]]
 collision_layer = 0
+motion_mode = 1
 script = ExtResource("1_gmlin")
+MAX_SPEED = 125.0
+ACCELERATION_SMOOTHING = 25
 
 [node name="AbilityManager" type="Node" parent="."]
 

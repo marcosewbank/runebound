@@ -1,7 +1,7 @@
 extends Camera2D
 
 # You can now change these values in the Godot Inspector
-@export var follow_speed: float = 8.0
+@export var follow_speed: float = 20
 @export var min_offset: float = -15.0
 @export var max_offset: float = 15.0
 

@@ -10,7 +10,9 @@ size = Vector2(18, 18)
 size = Vector2(12, 11)
 
 [node name="BasicEnemy" type="CharacterBody2D" groups=["enemy"]]
-collision_layer = 0
+collision_layer = 8
+collision_mask = 9
+motion_mode = 1
 script = ExtResource("1_obku4")
 
 [node name="Area2D" type="Area2D" parent="." groups=["enemy"]]
