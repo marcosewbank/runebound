@@ -1,6 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://b1nuhrd3w48k0"]
+[gd_scene load_steps=8 format=3 uid="uid://b1nuhrd3w48k0"]
 
+[ext_resource type="Script" uid="uid://dai6lpagagdva" path="res://scenes/ability/sword/sword_ability.gd" id="1_4b605"]
 [ext_resource type="Texture2D" uid="uid://cpck8v2k3pnrw" path="res://assets/sprites/characters/weapons_/sword_.png" id="1_4k4vq"]
+[ext_resource type="PackedScene" uid="uid://c35m2c1uohjie" path="res://scenes/components/hitbox_component.tscn" id="2_8xus8"]
 
 [sub_resource type="Animation" id="Animation_8xus8"]
 length = 0.5
@@ -46,7 +48,7 @@ tracks/2/keys = {
 tracks/3/type = "value"
 tracks/3/imported = false
 tracks/3/enabled = true
-tracks/3/path = NodePath("Area2D/CollisionShape2D:disabled")
+tracks/3/path = NodePath("HitboxComponent/CollisionShape2D:disabled")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/keys = {
@@ -101,7 +103,7 @@ tracks/2/keys = {
 tracks/3/type = "value"
 tracks/3/imported = false
 tracks/3/enabled = true
-tracks/3/path = NodePath("Area2D/CollisionShape2D:disabled")
+tracks/3/path = NodePath("HitboxComponent/CollisionShape2D:disabled")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/keys = {
@@ -117,12 +119,13 @@ _data = {
 &"swing": SubResource("Animation_4k4vq")
 }
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_4k4vq"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_8xus8"]
 size = Vector2(18, 27)
 
 [node name="SwordAbility" type="Node2D"]
 light_mask = 0
 visibility_layer = 4
+script = ExtResource("1_4b605")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
@@ -135,12 +138,10 @@ scale = Vector2(0.25, 0.25)
 texture = ExtResource("1_4k4vq")
 offset = Vector2(0, -4)
 
-[node name="Area2D" type="Area2D" parent="."]
-collision_layer = 4
-collision_mask = 0
+[node name="HitboxComponent" parent="." instance=ExtResource("2_8xus8")]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxComponent"]
 light_mask = 0
 position = Vector2(6, -0.5)
-shape = SubResource("RectangleShape2D_4k4vq")
+shape = SubResource("RectangleShape2D_8xus8")
 disabled = true

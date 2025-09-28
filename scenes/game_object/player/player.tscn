@@ -1,8 +1,11 @@
-[gd_scene load_steps=5 format=3 uid="uid://csivgpahurgev"]
+[gd_scene load_steps=6 format=3 uid="uid://csivgpahurgev"]
 
-[ext_resource type="Script" uid="uid://b6bgvkxpyw3sy" path="res://scenes/player/player.gd" id="1_gmlin"]
+[ext_resource type="Script" uid="uid://b6bgvkxpyw3sy" path="res://scenes/game_object/player/player.gd" id="1_gmlin"]
 [ext_resource type="PackedScene" uid="uid://dvcqbmmwu6s1x" path="res://scenes/ability/sword/sword_ability_controller.tscn" id="2_gmlin"]
 [ext_resource type="Texture2D" uid="uid://cho56xjnr42ou" path="res://assets/sprites/characters/mHero_/idle_/rIdle_0.png" id="2_qhqgy"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_s3670"]
+radius = 19.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_dqkch"]
 radius = 5.0
@@ -18,6 +21,14 @@ ACCELERATION_SMOOTHING = 25
 [node name="AbilityManager" type="Node" parent="."]
 
 [node name="SwordAbilityController" parent="AbilityManager" instance=ExtResource("2_gmlin")]
+
+[node name="Area2D" type="Area2D" parent="."]
+collision_layer = 16
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(0, 4)
+shape = SubResource("CircleShape2D_s3670")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("2_qhqgy")

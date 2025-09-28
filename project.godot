@@ -15,6 +15,10 @@ run/main_scene="uid://c73jej005qg5b"
 config/features=PackedStringArray("4.4", "Forward Plus")
 config/icon="res://icon.svg"
 
+[autoload]
+
+GameEvents="*res://scenes/autoload/game_events.tscn"
+
 [display]
 
 window/size/viewport_width=640
@@ -63,6 +67,7 @@ shoot={
 2d_physics/layer_2="Player"
 2d_physics/layer_3="Enemy"
 2d_physics/layer_4="EnemyCollision"
+2d_physics/layer_5="PlayerPickup"
 
 [physics]
 
