@@ -31,9 +31,9 @@ ACCELERATION_SMOOTHING = 25
 
 [node name="HealthComponent" parent="." instance=ExtResource("4_ss5pk")]
 
-[node name="AbilityManager" type="Node" parent="."]
+[node name="Abilities" type="Node" parent="."]
 
-[node name="SwordAbilityController" parent="AbilityManager" instance=ExtResource("2_gmlin")]
+[node name="SwordAbilityController" parent="Abilities" instance=ExtResource("2_gmlin")]
 
 [node name="DamageIntervalTimer" type="Timer" parent="."]
 wait_time = 0.5
