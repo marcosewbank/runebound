@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://b8lvf3x1r4bx8"]
+
+[ext_resource type="Texture2D" uid="uid://dqpe6inpplhqo" path="res://assets/sprites/characters/slime_/idle_/rIdle_0.png" id="1_814u5"]
+
+[node name="DeathComponent" type="Node2D"]
+
+[node name="GPUParticles2D" type="GPUParticles2D" parent="."]
+texture = ExtResource("1_814u5")

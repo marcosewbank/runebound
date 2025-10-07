@@ -1,0 +1,48 @@
+[gd_scene load_steps=9 format=3 uid="uid://cfeqt12sckwrn"]
+
+[ext_resource type="Script" uid="uid://clrq4oiydgd0p" path="res://scenes/game_object/enemies/orc/orc_enemy.gd" id="1_5vhux"]
+[ext_resource type="Texture2D" uid="uid://d1kts4m8cm1t1" path="res://assets/sprites/characters/orc_/idle_/lIdle_0.png" id="1_yqe5a"]
+[ext_resource type="PackedScene" uid="uid://dxm8qjdndruup" path="res://scenes/components/health_component.tscn" id="2_wo45q"]
+[ext_resource type="Script" uid="uid://bhr7agv2kfom4" path="res://scenes/components/hurtbox_component.gd" id="3_a6416"]
+[ext_resource type="PackedScene" uid="uid://b1usm8rwsm3fd" path="res://scenes/components/experience_component.tscn" id="4_wo45q"]
+[ext_resource type="PackedScene" uid="uid://b7tydag2cla23" path="res://scenes/components/velocity_component.tscn" id="5_mhqu2"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_kes85"]
+radius = 4.0
+height = 8.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_5vhux"]
+radius = 6.0
+height = 18.0
+
+[node name="OrcEnemy" type="CharacterBody2D" groups=["enemy"]]
+collision_layer = 8
+script = ExtResource("1_5vhux")
+
+[node name="HealthComponent" parent="." instance=ExtResource("2_wo45q")]
+max_health = 30.0
+
+[node name="VelocityComponent" parent="." instance=ExtResource("5_mhqu2")]
+max_speed = 60
+acceleration = 2.0
+
+[node name="ExperienceComponent" parent="." node_paths=PackedStringArray("health_component") instance=ExtResource("4_wo45q")]
+health_component = NodePath("../HealthComponent")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_yqe5a")
+offset = Vector2(0, -12)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+light_mask = 0
+position = Vector2(0, -4)
+shape = SubResource("CapsuleShape2D_kes85")
+
+[node name="HurtboxComponent" type="Area2D" parent="." node_paths=PackedStringArray("health_component")]
+script = ExtResource("3_a6416")
+health_component = NodePath("../HealthComponent")
+metadata/_custom_type_script = "uid://bhr7agv2kfom4"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtboxComponent"]
+position = Vector2(0, -8)
+shape = SubResource("CapsuleShape2D_5vhux")

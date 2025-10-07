@@ -1,8 +1,9 @@
-[gd_scene load_steps=9 format=3 uid="uid://mf8s5rtmlxfs"]
+[gd_scene load_steps=10 format=3 uid="uid://mf8s5rtmlxfs"]
 
 [ext_resource type="Texture2D" uid="uid://c48eqjm2ueoou" path="res://assets/sprites/characters/slime_/idle_/lIdle_0.png" id="1_mgruy"]
 [ext_resource type="Script" uid="uid://dlpxih2x5ap5u" path="res://scenes/game_object/enemies/basic_enemy.gd" id="1_obku4"]
 [ext_resource type="PackedScene" uid="uid://dxm8qjdndruup" path="res://scenes/components/health_component.tscn" id="2_8fy8w"]
+[ext_resource type="PackedScene" uid="uid://b7tydag2cla23" path="res://scenes/components/velocity_component.tscn" id="2_he3tq"]
 [ext_resource type="PackedScene" uid="uid://b1usm8rwsm3fd" path="res://scenes/components/experience_component.tscn" id="3_ehc25"]
 [ext_resource type="PackedScene" uid="uid://0mlwj1s0l8lq" path="res://scenes/game_object/experience/experience.tscn" id="4_uidmx"]
 [ext_resource type="PackedScene" uid="uid://bjf5w1vgii4s1" path="res://scenes/components/hurtbox_component.tscn" id="5_ko4sw"]
@@ -18,6 +19,8 @@ collision_layer = 8
 collision_mask = 9
 motion_mode = 1
 script = ExtResource("1_obku4")
+
+[node name="VelocityComponent" parent="." instance=ExtResource("2_he3tq")]
 
 [node name="HealthComponent" parent="." instance=ExtResource("2_8fy8w")]
 
