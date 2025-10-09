@@ -12,7 +12,7 @@ bg_color = Color(0.247059, 0.14902, 0.192157, 1)
 bg_color = Color(0.227451, 1, 0.243137, 1)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_s3670"]
-radius = 19.0
+radius = 29.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ss5pk"]
 radius = 5.0
