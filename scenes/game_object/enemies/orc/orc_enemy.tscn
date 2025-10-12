@@ -39,6 +39,8 @@ position = Vector2(0, -4)
 shape = SubResource("CapsuleShape2D_kes85")
 
 [node name="HurtboxComponent" type="Area2D" parent="." node_paths=PackedStringArray("health_component")]
+collision_layer = 0
+collision_mask = 4
 script = ExtResource("3_a6416")
 health_component = NodePath("../HealthComponent")
 metadata/_custom_type_script = "uid://bhr7agv2kfom4"
