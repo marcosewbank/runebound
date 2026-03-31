@@ -22,6 +22,7 @@ var _unnalloacted_points: 	int = 0;
 var _points_per_level:		int = 5;
 
 const SPEED = 300.0
+@onready var weapon: BaseWeapon = $BaseWeapon
 
 func _init(
 	p_name: 		String	= "none",
@@ -37,6 +38,9 @@ func _init(
 	_speed 		= 	p_speed;
 	_damage 	= 	p_damage;
 	_class_type	=	p_class_type;
+
+	if not weapon:
+		push_error("no error with this character")
 
 func level_up() -> void: 
 	match _class_type:
