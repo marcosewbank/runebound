@@ -1,6 +1,14 @@
 # Runebound
 
-## Description
+A 2D roguelike survivor game built with **Godot 4.4** — medieval fantasy setting, Vampire Survivors-style arena survival.
+
+**Technical documentation:** [docs/README.md](docs/README.md) (architecture, combat, components, progression).
+
+## Current Playable Build
+
+The main scene (`scenes/main/main.tscn`) implements a survivor loop: move with WASD, auto sword attacks, collect XP, pick upgrades on level-up, survive escalating waves (orcs join at difficulty 6), and last up to 5 minutes. See the docs for what is implemented versus still planned below.
+
+## Description (Design Vision)
 
 Simple game created using Godot Engine.
 Will be set in a mediavel fantasy world with three heros to play. Each hero will have it own pros/cons to diferentiate each one of them from the rest.
