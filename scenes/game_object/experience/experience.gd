@@ -7,7 +7,7 @@ func _ready() -> void:
 	$Area2D.area_entered.connect(on_area_entered)
 
 func tween_collect(percent:float, start_position: Vector2):
-	var player = get_tree().get_first_node_in_group('player')
+	var player = get_tree().get_first_node_in_group(Groups.PLAYER)
 	if player == null:
 		return
 	

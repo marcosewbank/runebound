@@ -1,80 +1,23 @@
 # Runebound
 
-A 2D roguelike survivor game built with **Godot 4.4** — medieval fantasy setting, Vampire Survivors-style arena survival.
+A 2D medieval fantasy game built with **Godot 4.4**.
 
-**Technical documentation:** [docs/README.md](docs/README.md) (architecture, combat, components, progression).
+**Design target:** ARPG + defendable base (day gather / night defend, weapon loadouts). See [docs/design.md](docs/design.md).  
+**Technical docs (current code):** [docs/README.md](docs/README.md).
 
 ## Current Playable Build
 
-The main scene (`scenes/main/main.tscn`) implements a survivor loop: move with WASD, auto sword attacks, collect XP, pick upgrades on level-up, survive escalating waves (orcs join at difficulty 6), and last up to 5 minutes. See the docs for what is implemented versus still planned below.
+The main scene (`scenes/main/main.tscn`) still implements a **survivor-style** arena loop: move with WASD, auto sword attacks, collect XP, pick upgrades on level-up, survive escalating waves (orcs join at difficulty 6), last up to 5 minutes for victory. The base-defense pivot in `docs/design.md` is not implemented yet.
 
 ## Description (Design Vision)
 
-Simple game created using Godot Engine.
-Will be set in a mediavel fantasy world with three heros to play. Each hero will have it own pros/cons to diferentiate each one of them from the rest.
-Only three types of enemies will be created to simplify the creation of the game.
+MVP direction (see [docs/design.md](docs/design.md)): roguelite ARPG + base defense — weapons staff / axe / dagger (swap at Hearth; staff fires effect projectiles), fixed base with four doors (one active spawn door per run), day gather / night defend, achievements as meta. Build order: [docs/implementation.md](docs/implementation.md).
 
 ## Reference
 
 <img src="./runebound_excalidraw.jpeg" />
 
----
-
-## Characteristics
-
-- Godot Engine
-- 2D
-- Roguelike (Vampire Survivors)
-- Aim and Shoot
-
-## Environment/Game Set
-
-- Fantasy
-- Medieval
-
-## Classes
-
-- Knight (Square)
-    - Tank
-    - Melee
-    - Stats
-        - High HP
-        - Low Mana
-        - Medium Speed
-        - Medium Damage
-
-- Archer (Triangle)
-    - Piercing
-    - DPS
-    - Stats
-        - Medium HP
-        - Low Mana
-        - High Speed
-        - Medium Damage
-
-- Mage (Circle)
-    - AoE
-    - CC
-    - DPS
-    - Stats
-        - Low HP
-        - High Mana
-        - Low Speed
-        - High Damage
-
-# Hability Controls
-
-- Left Click:   Auto-Attack
-- Right Click:  DPS
-- Q:            DPS
-- E:            Escape
-- R:            Ultimate
-
-## Enemy
-
-- Melee
-- Ranged
-- Boss (Final)
+Full MVP design (map, weapons, phases, economy): **[docs/design.md](docs/design.md)**.
 
 ## Creators
 

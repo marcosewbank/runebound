@@ -10,7 +10,7 @@ var target_node: Node2D
 func _ready():
 	make_current()
 	# Find the player ONCE at the start, which is more efficient
-	target_node = get_tree().get_first_node_in_group("player") as Node2D
+	target_node = get_tree().get_first_node_in_group(Groups.PLAYER) as Node2D
 
 func _process(delta: float) -> void:
 	# If we don't have a target (e.g., player died), do nothing.

@@ -1,61 +1,78 @@
 extends CharacterBody2D
 
-@export var MAX_SPEED = 200.0
-@export var ACCELERATION_SMOOTHING = 2
+@onready var health_component: HealthComponent = $HealthComponent
+@onready var health_bar: ProgressBar = $HealthBar
+@onready var abilities: Node = $Abilities
+@onready var stats_component: StatsComponent = $StatsComponent
 
-@onready var damage_interval_timer = $DamageIntervalTimer
-@onready var health_component = $HealthComponent
-@onready var health_bar = $HealthBar
-@onready var abilities = $Abilities
-
-
-
-var number_colliding_bodies = 0
 
 func _ready():
-	$CollisionArea2D.body_entered.connect(on_body_entered)
-	$CollisionArea2D.body_exited.connect(on_body_exited)
-	damage_interval_timer.timeout.connect(on_damage_interval_timer_timeout)
 	health_component.health_changed.connect(on_health_changed)
+	health_component.died.connect(on_died)
 	GameEvents.ability_upgrade_added.connect(on_ability_upgrade_added)
+	stats_component.stat_changed.connect(on_stat_changed)
+	_apply_stats()
 	update_health_display()
+
+
+func on_died() -> void:
+	set_physics_process(false)
+	# Keep the node alive so managers can react to the died signal; RunManager frees the scene.
 
 func _physics_process(delta: float) -> void:
 	_get_direction_input(delta)
 	move_and_slide()
 
+
 func _get_direction_input(delta: float):
 	var direction = Input.get_vector("walk_left", "walk_right", "walk_up", "walk_down")
-	var target_velocity = direction * MAX_SPEED
-	velocity = velocity.lerp(target_velocity, 1 - exp(-delta * ACCELERATION_SMOOTHING))
+	var target_velocity = direction * stats_component.get_stat(StatNames.MOVE_SPEED)
+	var smoothing = stats_component.get_stat(StatNames.ACCELERATION)
+	velocity = velocity.lerp(target_velocity, 1 - exp(-delta * smoothing))
 
-func on_body_entered(_other_body:Node2D):
-	number_colliding_bodies += 1
-	check_damage()
 
-func on_body_exited(_other_body:Node2D):
-	number_colliding_bodies -= 1
+func _apply_stats() -> void:
+	health_component.max_health = stats_component.get_stat(StatNames.MAX_HEALTH)
+	health_component.current_health = health_component.max_health
+	var pickup_shape = $PickupArea2D/CollisionShape2D.shape as CircleShape2D
+	if pickup_shape != null:
+		pickup_shape.radius = stats_component.get_stat(StatNames.PICKUP_RADIUS)
 
-func check_damage():
-	if number_colliding_bodies == 0 || !damage_interval_timer.is_stopped():
-		return
-	
-	health_component.damage(1)
-	damage_interval_timer.start()
-	
-	print(health_component.current_health)
+
+func on_stat_changed(stat_name: StringName) -> void:
+	match stat_name:
+		StatNames.MAX_HEALTH:
+			var percent = health_component.get_health_percent()
+			health_component.max_health = stats_component.get_stat(StatNames.MAX_HEALTH)
+			health_component.current_health = health_component.max_health * percent
+			health_component.health_changed.emit()
+		StatNames.PICKUP_RADIUS:
+			var pickup_shape = $PickupArea2D/CollisionShape2D.shape as CircleShape2D
+			if pickup_shape != null:
+				pickup_shape.radius = stats_component.get_stat(StatNames.PICKUP_RADIUS)
+
 
 func update_health_display():
 	health_bar.value = health_component.get_health_percent()
 
-func on_damage_interval_timer_timeout():
-	check_damage()
 
 func on_health_changed():
 	update_health_display()
 
-func on_ability_upgrade_added(ability_upgrade: AbilityUpgrade, _current_upgrades: Dictionary):
-	if not ability_upgrade is Ability:
+
+func on_ability_upgrade_added(ability_upgrade: AbilityUpgrade, current_upgrades: Dictionary):
+	if ability_upgrade is Ability:
+		var ability = ability_upgrade as Ability
+		abilities.add_child(ability.ability_controller_scene.instantiate())
 		return
-	var ability = ability_upgrade as Ability
-	abilities.add_child(ability.ability_controller_scene.instantiate())
+
+	if ability_upgrade is StatUpgrade:
+		var stat_upgrade = ability_upgrade as StatUpgrade
+		var quantity = current_upgrades[stat_upgrade.id]["quantity"]
+		var value = stat_upgrade.value_per_stack * quantity
+		stats_component.set_modifier(
+			stat_upgrade.id,
+			stat_upgrade.stat_name,
+			stat_upgrade.modifier_type,
+			value
+		)

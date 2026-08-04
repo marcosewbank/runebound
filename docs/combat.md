@@ -1,109 +1,92 @@
 # Combat
 
-Combat in Runebound uses **area-based hit detection** for player abilities and **body overlap** for enemy contact damage. Damage flows through `HealthComponent` on each entity.
+Combat uses a **single team-aware hitbox/hurtbox pipeline**. Player abilities and enemy contact damage both flow through `HitboxComponent` → `HurtboxComponent` → `HealthComponent`.
 
 ## Damage Pipeline
 
 ```mermaid
 flowchart LR
-    A[HitboxComponent Area2D] -->|area_entered| B[HurtboxComponent]
+    A[HitboxComponent] -->|area_entered| B[HurtboxComponent]
     B --> C[HealthComponent.damage]
     C --> D{health == 0?}
-    D -->|yes| E[died → queue_free]
-    D -->|no| F[health_changed]
-    F --> G[HitFlashComponent / HUD]
-    B --> H[FloatingText]
+    D -->|yes| E[died signal]
+    E --> F[Owner handles free / VFX / UI]
+    D -->|no| G[health_changed]
+    G --> H[HitFlashComponent / HUD]
+    B --> I[FloatingText]
 ```
+
+### Teams and layers
+
+| Source | Hitbox team / layer | Targets hurtbox team / mask |
+|--------|---------------------|-----------------------------|
+| Player abilities | `PLAYER` / PlayerHitbox | Enemy hurtboxes |
+| Enemy contact | `ENEMY` / EnemyHitbox | Player hurtbox |
+
+`HurtboxComponent` also checks `HitboxComponent.team` so mismatched overlaps are ignored.
 
 ### HitboxComponent
 
-- `Area2D` on **physics layer 4** (EnemyCollision).
-- Carries a `damage` float set by the spawning ability or weapon.
-- Does not detect overlaps itself; enemies' hurtboxes listen for it.
+- Carries `damage` and `team`.
+- Sets collision layer from team in `_ready`.
+- `monitorable = true`, `monitoring = false` (hurtboxes detect hitboxes).
 
 ### HurtboxComponent
 
-- `Area2D` with `collision_mask = 4` (listens for hitboxes).
-- On overlap with a `HitboxComponent`, applies damage to its exported `health_component`.
-- Spawns `floating_text.tscn` on the `foreground_layer` showing damage dealt.
+- Exports `health_component`, `team`, and `invulnerability_time`.
+- Player hurtbox uses `invulnerability_time = 0.5`.
+- On invulnerability end, re-checks `get_overlapping_areas()` so contact damage continues while overlapping.
 
 ### HealthComponent
 
 - Tracks `max_health` and `current_health`.
-- `damage(amount)` clamps health to zero, emits `health_changed`, then deferred `check_death`.
-- On death: emits `died` and `queue_free()` the owner.
+- On zero health: emits `died` only — **does not** `queue_free` the owner.
+- Owners (`BaseEnemy`, `RunManager` via player) decide what happens next.
 
-## Player Damage Sources
+## Player Damage
 
-### Contact damage (enemies)
+The player has a real `HurtboxComponent` (team `PLAYER`). Enemy contact `HitboxComponent`s deal damage from each enemy's `StatNames.DAMAGE` (slime 1, orc 2). There is no separate body-overlap damage path.
 
-The player (`player.gd`) uses `CollisionArea2D` with `collision_mask = 8` (layer 4) to detect overlapping enemy collision bodies:
+## Abilities
 
-- Counts overlapping bodies; when count > 0 and `DamageIntervalTimer` is idle, deals **1** damage and starts a **0.5s** cooldown.
-- This is separate from the hitbox/hurtbox system — enemies damage the player through physics body overlap, not hurtboxes.
+Abilities extend `BaseAbilityController` (`scripts/systems/base_ability_controller.gd`):
 
-### Abilities
+- Cooldown = `base_cooldown / stats.get_stat(ATTACK_RATE)`
+- Damage = `base_damage * stats.get_stat(DAMAGE)`
+- Targeting helpers live in `scripts/systems/targeting.gd`
 
-Abilities are **timer-driven controllers** under the player's `Abilities` node.
+### Sword (default)
 
-#### Sword (default)
+- `base_cooldown = 1.0`, `base_damage = 5`, range 200.
+- Spawns `sword_ability.tscn` at the nearest enemy; animation enables the hitbox briefly.
 
-`SwordAbilityController`:
+### Axe (unlockable `Ability`)
 
-1. On timer timeout, finds all nodes in group `enemy` within `MAX_RANGE` (200px).
-2. Picks the closest enemy.
-3. Spawns `sword_ability.tscn` at the enemy with a random offset, rotated toward the target.
-4. Sets `hitbox_component.damage` (default **5**).
-
-The sword scene plays a **swing** animation that briefly enables its hitbox collider (0.2–0.4s), then `queue_free`.
-
-**Upgrade:** `sword_rate` (`resources/upgrades/sword_rate.tres`) reduces timer wait time by 10% per stack (max 5).
-
-#### Axe (unlockable upgrade)
-
-`AxeAbilityController`:
-
-1. On timer timeout, spawns `axe_ability.tscn` at the player position.
-2. Sets damage (default **10**).
-
-The axe orbits outward from the player over 3 seconds (tween on `AxeAbility`), spinning via `AnimationPlayer`, then frees itself.
-
-**Upgrade:** `axe` (`resources/upgrades/axe.tres`) — `Ability` resource that adds the controller scene to the player once (max quantity 1).
+- `base_cooldown = 3.0`, `base_damage = 10`.
+- Orbits the player for 3 seconds then frees itself.
 
 ## Enemy Behavior
 
-Both `basic_enemy` and `orc_enemy` share the same movement pattern:
+Both slime and orc use `BaseEnemy` (`scripts/entities/base_enemy.gd`):
 
 ```gdscript
 velocity_component.accelerate_to_player()
 velocity_component.move(self)
 ```
 
-`VelocityComponent` lerps velocity toward the player at `max_speed` with configurable `acceleration`.
+Stats are applied from each scene's `EntityStats` resource in `_ready`. Movement runs in `_physics_process`.
 
-| Enemy | max_health | max_speed | notes |
-|-------|------------|-----------|-------|
-| Basic (slime) | 10 (default) | 40 (default) | 100% XP drop chance |
-| Orc | 30 | 60 | Added to spawn table at arena difficulty 6 |
-
-Enemies are `CharacterBody2D` on **layer 8** (Enemy), mask **9** (Terrain + EnemyCollision).
+| Enemy | Stats resource | Notes |
+|-------|----------------|-------|
+| Slime | `resources/stats/slime_stats.tres` | 100% XP drop chance |
+| Orc | `resources/stats/orc_stats.tres` | Added at arena difficulty 6 |
 
 ## Visual Feedback
 
 ### Hit flash
 
-`HitFlashComponent` listens to `health_changed` and tweens a shader `lerp_percent` uniform from white flash back to normal over 0.25s. See [Components](components.md#hitflashcomponent).
+`HitFlashComponent` listens to `health_changed` and tweens shader `lerp_percent` from white flash to normal over 0.25s. Script: `scenes/components/hit_flash_component.gd`.
 
 ### Floating damage numbers
 
-`FloatingText` tweens upward with scale pulse, then frees itself.
-
-## Weapon Scripts (Not in Main Loop)
-
-Under `scripts/weapons/`, base classes support a mouse-aimed shooting model:
-
-- `BaseWeapon` — rotates toward mouse, flips sprite Y, fires on `shoot` input.
-- `RangedBaseWeapon` / `wand.gd` — instantiates bullet from `scenes/ammo.tscn` at a `ShootingPoint` marker.
-- `MeleeBaseWeapon` — stub `_action()`.
-
-These are **not** attached to the current `player.tscn`. The survivor-style auto-abilities are the active combat system.
+`FloatingText` tweens upward with a scale pulse, then frees itself.

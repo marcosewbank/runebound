@@ -1,11 +1,21 @@
-[gd_scene load_steps=9 format=3 uid="uid://cfeqt12sckwrn"]
+[gd_scene load_steps=14 format=3 uid="uid://cfeqt12sckwrn"]
 
-[ext_resource type="Script" uid="uid://clrq4oiydgd0p" path="res://scenes/game_object/enemies/orc/orc_enemy.gd" id="1_5vhux"]
+[ext_resource type="Script" path="res://scripts/entities/base_enemy.gd" id="1_5vhux"]
 [ext_resource type="Texture2D" uid="uid://d1kts4m8cm1t1" path="res://assets/sprites/characters/orc_/idle_/lIdle_0.png" id="1_yqe5a"]
 [ext_resource type="PackedScene" uid="uid://dxm8qjdndruup" path="res://scenes/components/health_component.tscn" id="2_wo45q"]
-[ext_resource type="Script" uid="uid://bhr7agv2kfom4" path="res://scenes/components/hurtbox_component.gd" id="3_a6416"]
 [ext_resource type="PackedScene" uid="uid://b1usm8rwsm3fd" path="res://scenes/components/experience_component.tscn" id="4_wo45q"]
+[ext_resource type="PackedScene" uid="uid://gjqu16uvinl7" path="res://scenes/components/hit_flash_component.tscn" id="5_iiceh"]
 [ext_resource type="PackedScene" uid="uid://b7tydag2cla23" path="res://scenes/components/velocity_component.tscn" id="5_mhqu2"]
+[ext_resource type="Shader" uid="uid://bac0k2gqu0dfd" path="res://scenes/components/hit_flash_component.gdshader" id="6_slphj"]
+[ext_resource type="PackedScene" path="res://scenes/components/stats_component.tscn" id="7_stats"]
+[ext_resource type="PackedScene" uid="uid://bjf5w1vgii4s1" path="res://scenes/components/hurtbox_component.tscn" id="8_hurt"]
+[ext_resource type="PackedScene" uid="uid://c35m2c1uohjie" path="res://scenes/components/hitbox_component.tscn" id="9_hit"]
+[ext_resource type="Resource" path="res://resources/stats/orc_stats.tres" id="10_ostats"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_10o4s"]
+resource_local_to_scene = true
+shader = ExtResource("6_slphj")
+shader_parameter/lerp_percent = 0.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_kes85"]
 radius = 4.0
@@ -15,19 +25,30 @@ height = 8.0
 radius = 6.0
 height = 18.0
 
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_hit"]
+radius = 5.0
+height = 16.0
+
 [node name="OrcEnemy" type="CharacterBody2D" groups=["enemy"]]
-collision_layer = 8
+collision_layer = 4
+collision_mask = 1
+motion_mode = 1
 script = ExtResource("1_5vhux")
 
+[node name="StatsComponent" parent="." instance=ExtResource("7_stats")]
+base_stats = ExtResource("10_ostats")
+
 [node name="HealthComponent" parent="." instance=ExtResource("2_wo45q")]
-max_health = 30.0
 
 [node name="VelocityComponent" parent="." instance=ExtResource("5_mhqu2")]
-max_speed = 60
-acceleration = 2.0
 
 [node name="ExperienceComponent" parent="." node_paths=PackedStringArray("health_component") instance=ExtResource("4_wo45q")]
 health_component = NodePath("../HealthComponent")
+
+[node name="HitFlashComponent" parent="." node_paths=PackedStringArray("health_component", "sprite") instance=ExtResource("5_iiceh")]
+health_component = NodePath("../HealthComponent")
+sprite = NodePath("../Sprite2D")
+hit_flash_material = SubResource("ShaderMaterial_10o4s")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("1_yqe5a")
@@ -38,13 +59,18 @@ light_mask = 0
 position = Vector2(0, -4)
 shape = SubResource("CapsuleShape2D_kes85")
 
-[node name="HurtboxComponent" type="Area2D" parent="." node_paths=PackedStringArray("health_component")]
-collision_layer = 0
-collision_mask = 4
-script = ExtResource("3_a6416")
+[node name="HurtboxComponent" parent="." node_paths=PackedStringArray("health_component") instance=ExtResource("8_hurt")]
 health_component = NodePath("../HealthComponent")
-metadata/_custom_type_script = "uid://bhr7agv2kfom4"
+team = 1
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HurtboxComponent"]
 position = Vector2(0, -8)
 shape = SubResource("CapsuleShape2D_5vhux")
+
+[node name="HitboxComponent" parent="." instance=ExtResource("9_hit")]
+team = 1
+damage = 2.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxComponent"]
+position = Vector2(0, -8)
+shape = SubResource("CapsuleShape2D_hit")

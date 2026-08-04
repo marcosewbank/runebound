@@ -1,24 +1,45 @@
 # Components
 
-Reusable scenes under `scenes/components/` compose enemies and the player. Each component is a small, focused `Node` or `Area2D` child with an exported reference to siblings (typically `HealthComponent`).
+Reusable scenes under `scenes/components/` compose enemies and the player. Exports should prefer typed `class_name` references (`HealthComponent`, `StatsComponent`, etc.).
 
 ## Component Composition
 
-A fully equipped enemy (e.g. `basic_enemy.tscn`) stacks:
+A fully equipped enemy stacks:
 
 ```mermaid
 graph TB
-    Enemy[CharacterBody2D]
+    Enemy[BaseEnemy CharacterBody2D]
+    Enemy --> SC[StatsComponent]
     Enemy --> VC[VelocityComponent]
     Enemy --> HC[HealthComponent]
     Enemy --> EC[ExperienceComponent]
     Enemy --> HFC[HitFlashComponent]
-    Enemy --> Hurt[HurtboxComponent + CollisionShape2D]
+    Enemy --> Hurt[HurtboxComponent]
+    Enemy --> Hit[HitboxComponent contact]
     Enemy --> Sprite[Sprite2D]
     Enemy --> BodyCol[CollisionShape2D]
 ```
 
-The player uses `HealthComponent` only (no hurtbox — damage comes from contact overlap).
+The player uses `StatsComponent`, `HealthComponent`, and `HurtboxComponent` (no enemy-style contact hitbox).
+
+---
+
+## StatsComponent
+
+**Script:** `scenes/components/stats_component.gd`  
+**Class:** `StatsComponent`  
+**Scene:** `scenes/components/stats_component.tscn`
+
+| Export / API | Description |
+|--------------|-------------|
+| `base_stats` | `EntityStats` resource |
+| `get_stat(name)` | `(base + flat) * (1 + percent)` |
+| `add_modifier` / `set_modifier` / `remove_modifier` | Modifier stack keyed by source id |
+| `stat_changed(stat_name)` | Signal when a resolved stat may have changed |
+
+Stat name constants: `scripts/constants/stats.gd` (`StatNames.MAX_HEALTH`, `StatNames.MOVE_SPEED`, …).
+
+Entity definitions: `resources/stats/player_stats.tres`, `slime_stats.tres`, `orc_stats.tres`.
 
 ---
 
@@ -34,7 +55,7 @@ The player uses `HealthComponent` only (no hurtbox — damage comes from contact
 
 **Signals:** `died`, `health_changed`
 
-On zero health, emits `died` and frees the owner. Other components subscribe to these signals rather than polling.
+On zero health, emits `died` only. The owner frees itself (enemies) or is handled by `RunManager` (player).
 
 ---
 
@@ -45,9 +66,8 @@ On zero health, emits `died` and frees the owner. Other components subscribe to 
 
 | Property | Description |
 |----------|-------------|
-| `damage` | Set at spawn time by abilities |
-
-Physics: **layer 4**, mask 0. Paired with `HurtboxComponent` on enemies.
+| `team` | `PLAYER` or `ENEMY` — sets collision layer |
+| `damage` | Set from stats or abilities |
 
 ---
 
@@ -59,8 +79,8 @@ Physics: **layer 4**, mask 0. Paired with `HurtboxComponent` on enemies.
 | Export | Description |
 |--------|-------------|
 | `health_component` | Target to damage |
-
-Physics: **mask 4** (detects hitboxes). Also in group `enemy` (used by sword targeting).
+| `team` | Sets layer/mask pair |
+| `invulnerability_time` | I-frames after a hit (0.5s on player) |
 
 Spawns floating damage text on hit.
 
@@ -68,65 +88,47 @@ Spawns floating damage text on hit.
 
 ## VelocityComponent
 
-**Script:** `scenes/components/velocity_component.gd`
+**Script:** `scenes/components/velocity_component.gd`  
+**Class:** `VelocityComponent`
 
 | Export | Default | Description |
 |--------|---------|-------------|
 | `max_speed` | 40 | Top movement speed |
 | `acceleration` | 5 | Lerp factor toward desired velocity |
 
-**Methods:**
+**Methods:** `accelerate_to_player()`, `accelerate_in_direction(direction)`, `move(character_body)`.
 
-- `accelerate_to_player()` — direction toward `player` group node.
-- `accelerate_in_direction(direction)` — generic chase / patrol helper.
-- `move(character_body)` — applies velocity and `move_and_slide()`.
-
-Used by enemy scripts, not the player (player handles movement inline in `player.gd`).
+Used by `BaseEnemy`. The player applies move speed from `StatsComponent` inline.
 
 ---
 
 ## ExperienceComponent
 
-**Script:** `scenes/components/experience_component.gd`
+**Script:** `scenes/components/experience_component.gd`  
+**Class:** `ExperienceComponent`
 
 | Export | Description |
 |--------|-------------|
-| `drop_percent` | 0–1 chance to drop XP on death (default 0.75) |
+| `drop_percent` | 0–1 chance to drop XP on death |
 | `health_component` | Subscribes to `died` |
 | `experience_scene` | Prefab (`experience.tscn`) |
-
-On death, may spawn an experience orb at the owner's position on `entities_layer`.
 
 ---
 
 ## HitFlashComponent
 
-**Script:** `hit_flash_component.gd` (project root)  
+**Script:** `scenes/components/hit_flash_component.gd`  
+**Class:** `HitFlashComponent`  
 **Scene:** `scenes/components/hit_flash_component.tscn`  
-**Shader:** `scenes/components/hit_flash_component.gdshader`  
-**Material:** `scenes/components/hit_flash_component_material.tres`
-
-Recent work added white-flash feedback when an entity takes damage.
+**Shader:** `scenes/components/hit_flash_component.gdshader`
 
 | Export | Description |
 |--------|-------------|
 | `health_component` | Listens to `health_changed` |
-| `sprite` | `Sprite2D` to receive the shader material |
-| `hit_flash_material` | `ShaderMaterial` with `lerp_percent` uniform |
+| `sprite` | `Sprite2D` receiving the material |
+| `hit_flash_material` | `ShaderMaterial` with `lerp_percent` |
 
-**Behavior:**
-
-1. On `_ready`, assigns `hit_flash_material` to the sprite.
-2. On `health_changed`, kills any active tween, sets `lerp_percent` to `1.0` (full white mix).
-3. Tweens `lerp_percent` back to `0.0` over **0.25s** (cubic ease-in).
-
-**Shader logic:** mixes texture color toward white by `lerp_percent`:
-
-```glsl
-vec4 final_color = mix(texture_color, vec4(1.0, 1.0, 1.0, texture_color.a), lerp_percent);
-```
-
-`basic_enemy.tscn` uses the shared material resource; `orc_enemy.tscn` embeds a local `ShaderMaterial` sub-resource with the same shader.
+Enemy scenes typically use a `resource_local_to_scene` material so concurrent flashes do not share uniform state. A shared default material also exists at `hit_flash_component_material.tres`.
 
 ---
 
@@ -134,14 +136,15 @@ vec4 final_color = mix(texture_color, vec4(1.0, 1.0, 1.0, texture_color.a), lerp
 
 **Scene:** `scenes/components/death_component.tscn`
 
-Contains a `GPUParticles2D` with a slime texture. **Not currently instanced** on enemy death — available for future death VFX.
+GPU particle burst prefab. Available for owners to spawn on `died`; not auto-attached yet.
 
 ---
 
 ## Scene Instance Paths
 
-| Component | Scene UID path |
-|-----------|----------------|
+| Component | Path |
+|-----------|------|
+| StatsComponent | `scenes/components/stats_component.tscn` |
 | HealthComponent | `scenes/components/health_component.tscn` |
 | HitboxComponent | `scenes/components/hitbox_component.tscn` |
 | HurtboxComponent | `scenes/components/hurtbox_component.tscn` |
@@ -149,4 +152,4 @@ Contains a `GPUParticles2D` with a slime texture. **Not currently instanced** on
 | ExperienceComponent | `scenes/components/experience_component.tscn` |
 | HitFlashComponent | `scenes/components/hit_flash_component.tscn` |
 
-When adding a new enemy, duplicate the component wiring from `basic_enemy.tscn` and adjust `HealthComponent`, `VelocityComponent`, and collision shapes as needed.
+When adding a new enemy: instance `basic_enemy.tscn` as a template, point `StatsComponent.base_stats` at a new `.tres`, and keep the script as `BaseEnemy`.

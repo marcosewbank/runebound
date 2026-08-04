@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="StatUpgrade" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/upgrades/stat_upgrade.gd" id="1_stat"]
+
+[resource]
+script = ExtResource("1_stat")
+id = "move_speed"
+max_quantity = 5
+name = "Swift Feet"
+description = "Increases move speed by 15%."
+stat_name = &"move_speed"
+modifier_type = 1
+value_per_stack = 0.15

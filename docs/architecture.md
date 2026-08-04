@@ -1,6 +1,6 @@
 # Architecture
 
-Runebound follows a **component + manager** pattern common in Godot survivor-likes: gameplay entities are `CharacterBody2D` scenes composed of child components, while singleton-style managers in the main scene orchestrate spawning, progression, and run timing.
+Runebound follows a **component + manager + data** pattern: gameplay entities are `CharacterBody2D` scenes composed of child components, stats come from `EntityStats` resources, and managers in the main scene orchestrate spawning, progression, and run timing.
 
 ## High-Level Scene Graph
 
@@ -11,6 +11,7 @@ graph TB
     Main[Main Node]
     Main --> UI[ArenaTimeUI + ExperienceBar]
     Main --> ATM[ArenaTimeManager]
+    Main --> RM[RunManager]
     Main --> EM[EnemyManager]
     Main --> XM[ExperienceManager]
     Main --> UM[UpgradeManager]
@@ -21,30 +22,26 @@ graph TB
     Entities --> Player[Player]
     EM -->|spawns into| Entities
     FG -->|abilities + VFX| FG
+    ATM -->|run_time_expired| RM
+    Player -->|died| RM
 ```
 
 ### Layer Groups
 
-Two `Node2D` groups partition the world for spawning and rendering:
+Two `Node2D` groups partition the world for spawning and rendering. Constants live in `scripts/constants/groups.gd` (`Groups.PLAYER`, `Groups.ENEMY`, etc.).
 
 | Group | Purpose |
 |-------|---------|
 | `entities_layer` | Player, enemies, experience orbs |
 | `foreground_layer` | Ability instances, floating damage text |
 
-Managers and abilities resolve these via `get_tree().get_first_node_in_group(...)`.
-
-### Player Group
-
-The player node is in the `player` group. Enemies use `VelocityComponent` to chase it; ability controllers query it for targeting and positioning.
+The player node is in the `player` group. Enemy **bodies** are in the `enemy` group (used by targeting).
 
 ## Autoload
 
 | Name | Path | Role |
 |------|------|------|
 | `GameEvents` | `scenes/autoload/game_events.tscn` | Global signal bus for experience collection and upgrade application |
-
-`GameEvents` decouples collectors and managers from direct references:
 
 ```gdscript
 signal experience_collected(experience_amount: float)
@@ -53,46 +50,68 @@ signal ability_upgrade_added(upgrade: AbilityUpgrade, current_upgrades: Dictiona
 
 ## Managers
 
-All managers live as children of `Main` and are configured through scene exports.
+### RunManager
+
+Single authority for run end state (`PLAYING` / `ENDED`):
+
+- Listens to player `HealthComponent.died` → defeat.
+- Listens to `ArenaTimeManager.run_time_expired` → victory.
+- Pauses the tree and shows `end_screen.tscn`.
 
 ### EnemyManager
 
 - Spawns enemies on a repeating timer at a random point on a circle around the player (`SPAWN_RADIUS = 360`).
-- Uses `WeightedTable` to pick enemy scenes (basic slime by default; orc added at arena difficulty 6).
+- Uses `WeightedTable` to pick enemy scenes (slime by default; orc at arena difficulty 6).
 - Listens to `arena_difficulty_increased` to shorten spawn interval and expand the enemy pool.
 
 ### ExperienceManager
 
 - Tracks `current_experience`, `current_level`, and `target_experience`.
 - Subscribes to `GameEvents.experience_collected`.
-- Emits `experience_updated` (for the HUD) and `level_up` (for `UpgradeManager`).
+- Overflow XP carries across level-ups.
+- Emits `experience_updated` (HUD) and `level_up` (`UpgradeManager`).
 
 ### UpgradeManager
 
-- Holds an `upgrade_pool` of `AbilityUpgrade` resources.
-- On level-up, instantiates `upgrade_screen.tscn`, offers two random choices, and calls `apply_upgrade`.
-- Tracks `current_upgrades` by upgrade `id` and removes maxed-out entries from the pool.
+- Holds an `upgrade_pool` of `AbilityUpgrade` resources (`Ability` and `StatUpgrade`).
+- On level-up, offers two random choices via `upgrade_screen.tscn`.
 - Emits upgrades through `GameEvents.emit_ability_upgrade_added`.
 
 ### ArenaTimeManager
 
 - Runs a **300-second** (5-minute) one-shot timer.
 - Every **5 seconds** of elapsed time, increments `arena_difficulty` and emits `arena_difficulty_increased`.
-- On timer timeout, shows the end screen (same scene as defeat, defaulting to victory labels in the `.tscn`).
+- On timeout, emits `run_time_expired` (does **not** own the end screen).
 
 ## Physics Layers
 
-Configured in `project.godot`:
+Configured in `project.godot` and mirrored in `scripts/constants/layers.gd`:
 
-| Layer | Name | Typical use |
-|-------|------|-------------|
-| 1 | Terrain | Tilemap collision |
-| 2 | Player | Player body |
-| 3 | Enemy | Enemy bodies |
-| 4 | EnemyCollision | Hitboxes and player-enemy overlap areas |
-| 5 | PlayerPickup | Experience orb collection |
+| Layer | Name | Bit value | Typical use |
+|-------|------|-----------|-------------|
+| 1 | Terrain | 1 | Tilemap collision |
+| 2 | PlayerBody | 2 | Player character body |
+| 3 | EnemyBody | 4 | Enemy character bodies |
+| 4 | PlayerHitbox | 8 | Player ability hitboxes |
+| 5 | EnemyHitbox | 16 | Enemy contact / attack hitboxes |
+| 6 | PlayerHurtbox | 32 | Player hurtbox |
+| 7 | EnemyHurtbox | 64 | Enemy hurtboxes |
+| 8 | Pickup | 128 | Player pickup area / XP detection |
 
 Gravity is disabled (`2d/default_gravity = 0`) for top-down movement.
+
+## Stats Pipeline
+
+```mermaid
+flowchart TD
+    Def[EntityStats .tres] --> SC[StatsComponent]
+    Up[StatUpgrade .tres] -->|set_modifier| SC
+    SC -->|"get_stat(MAX_HEALTH)"| HC[HealthComponent]
+    SC -->|"get_stat(MOVE_SPEED)"| PlayerOrVC[Player / VelocityComponent]
+    SC -->|"get_stat(ATTACK_RATE)"| AC[BaseAbilityController]
+```
+
+Resolution: `(base + flat) * (1 + percent)`. Modifiers are keyed by upgrade `id` so re-applying a stack replaces the previous value for that source.
 
 ## Display
 
@@ -101,42 +120,40 @@ Gravity is disabled (`2d/default_gravity = 0`) for top-down movement.
 
 ## Camera
 
-`scenes/game_object/camera/camera.gd` extends `Camera2D`:
-
-- Follows the player with exponential smoothing.
-- Applies a mouse-offset look-ahead (clamped) so the view shifts slightly toward the cursor.
+`scenes/game_object/camera/camera.gd` follows the player with exponential smoothing and a clamped mouse look-ahead.
 
 ## Planned vs Implemented
 
-The root README describes a three-hero medieval fantasy game with aim-and-shoot combat. The **current main scene** uses a simplified survivor loop:
-
 | Area | Status |
 |------|--------|
-| Single player (`player.tscn`) | **Active** — WASD movement, contact damage, sword + upgradeable abilities |
-| Knight / Ranger / Mage scenes | **Scaffolded** — `BaseCharacter` stats exist; scenes not wired into `main.tscn` |
-| Weapon bases (`BaseWeapon`, `MeleeBaseWeapon`, `RangedBaseWeapon`, `wand.gd`) | **Partial** — mouse-aim shooting logic exists but is not used by the main player |
-| Basic enemy (slime) | **Active** |
-| Orc enemy | **Active** — joins spawns at difficulty 6 |
+| Single player (`player.tscn`) + stats | **Active** |
+| Knight / Ranger / Mage class fantasy | **Not implemented** — rebuild on `EntityStats` / abilities when needed |
+| Aim-and-shoot weapons | **Removed** — old `scripts/weapons` parallel system deleted |
+| Basic enemy (slime) / Orc via `BaseEnemy` | **Active** |
 | Ranged enemy, boss | **Not implemented** |
-| Death particles (`death_component.tscn`) | **Scene only** — not attached to enemies |
-| Victory condition | **Not wired** — `end_screen.gd` only exposes `set_defeat()`; arena timeout uses default victory labels |
+| Death VFX (`death_component.tscn`) | **Scene available** — owner frees on death; VFX not yet spawned |
+| Victory / defeat | **Wired** through `RunManager` |
 
 ## Event Flow Overview
 
 ```mermaid
 sequenceDiagram
     participant Enemy
-    participant XP as Experience orb
+    participant XP as ExperienceOrb
     participant GE as GameEvents
     participant XM as ExperienceManager
     participant UM as UpgradeManager
     participant Player
+    participant RM as RunManager
 
-    Enemy->>XP: ExperienceComponent on death
+    Enemy->>XP: ExperienceComponent on died
     XP->>GE: experience_collected
     GE->>XM: increment experience
     XM->>UM: level_up
-    UM->>Player: upgrade screen → apply_upgrade
+    UM->>Player: upgrade screen apply
     UM->>GE: ability_upgrade_added
-    GE->>Player: spawn ability controller
+    GE->>Player: Ability spawn or StatUpgrade modifier
+    Player->>RM: died
+    Note over RM: or ArenaTimeManager run_time_expired
+    RM->>RM: pause + end screen
 ```
