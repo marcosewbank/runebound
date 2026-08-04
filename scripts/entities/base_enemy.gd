@@ -13,7 +13,7 @@ func _ready() -> void:
 
 
 func _physics_process(_delta: float) -> void:
-	velocity_component.accelerate_to_player()
+	velocity_component.accelerate_to_nearest_target()
 	velocity_component.move(self)
 
 

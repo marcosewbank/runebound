@@ -245,6 +245,9 @@ Replace / retire for this design:
 | Loot stub | Generic “scrap” drop until craft recipes are defined |
 | Night downed camera | Follow Hearth |
 | Dusk intel UI | Skip for first slice |
+| Weapon swap | At placed **Weapon Stand** only (not Hearth) |
+| Build UI | Panel toggled with **B**; select building then place |
+| Hearth E | Repair if damaged; else sound horn (Day). No weapon cycle |
 
 ## Later (not MVP)
 

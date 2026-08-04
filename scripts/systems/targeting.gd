@@ -26,3 +26,24 @@ static func get_nearest_enemy(tree: SceneTree, origin: Vector2, max_range: float
 			nearest = node
 			nearest_distance_squared = distance_squared
 	return nearest
+
+
+## Nearest hero or destructible structure (player walls / hearth). Frames are not targets.
+static func get_nearest_attack_target(tree: SceneTree, origin: Vector2, max_range: float = INF) -> Node2D:
+	var nearest: Node2D = null
+	var nearest_distance_squared := max_range * max_range
+	for group_name in [Groups.PLAYER, Groups.PLAYER_WALL, Groups.HEARTH, Groups.BUILDING]:
+		for node in tree.get_nodes_in_group(group_name):
+			if not node is Node2D:
+				continue
+			var candidate := node as Node2D
+			if not is_instance_valid(candidate):
+				continue
+			var health := candidate.get_node_or_null("HealthComponent") as HealthComponent
+			if health != null and health.current_health <= 0:
+				continue
+			var distance_squared = candidate.global_position.distance_squared_to(origin)
+			if distance_squared < nearest_distance_squared:
+				nearest = candidate
+				nearest_distance_squared = distance_squared
+	return nearest

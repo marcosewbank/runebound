@@ -5,21 +5,29 @@ extends CharacterBody2D
 @onready var abilities: Node = $Abilities
 @onready var stats_component: StatsComponent = $StatsComponent
 
+var combat: PlayerCombat
+
 
 func _ready():
 	health_component.health_changed.connect(on_health_changed)
 	health_component.died.connect(on_died)
 	GameEvents.ability_upgrade_added.connect(on_ability_upgrade_added)
 	stats_component.stat_changed.connect(on_stat_changed)
+	combat = get_node_or_null("PlayerCombat") as PlayerCombat
 	_apply_stats()
 	update_health_display()
 
 
 func on_died() -> void:
-	set_physics_process(false)
-	# Keep the node alive so managers can react to the died signal; RunManager frees the scene.
+	# HeroDeathManager owns downed / day-death flow. Do not free the player.
+	pass
+
 
 func _physics_process(delta: float) -> void:
+	if combat != null and combat.is_dashing():
+		velocity = combat.get_dash_velocity()
+		move_and_slide()
+		return
 	_get_direction_input(delta)
 	move_and_slide()
 

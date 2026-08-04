@@ -1,0 +1,31 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scenes/ability/staff/staff_projectile.gd" id="1_proj"]
+[ext_resource type="PackedScene" path="res://scenes/components/hitbox_component.tscn" id="2_hit"]
+[ext_resource type="Texture2D" path="res://assets/sprites/characters/weapons_/Purple Effect and Bullet 16x16.png" id="3_purple"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bullet"]
+atlas = ExtResource("3_purple")
+region = Rect2(96, 16, 16, 16)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_hit"]
+radius = 7.0
+
+[node name="StaffProjectile" type="Node2D"]
+z_index = 20
+script = ExtResource("1_proj")
+
+[node name="Glow" type="Polygon2D" parent="."]
+color = Color(0.75, 0.35, 1, 0.85)
+polygon = PackedVector2Array(-5, -5, 5, -5, 5, 5, -5, 5)
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(1.5, 1.5)
+texture = SubResource("AtlasTexture_bullet")
+
+[node name="HitboxComponent" parent="." instance=ExtResource("2_hit")]
+team = 0
+damage = 8.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxComponent"]
+shape = SubResource("CircleShape2D_hit")

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BuildEconomy" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/economy/build_economy.gd" id="1_econ"]
+
+[resource]
+script = ExtResource("1_econ")
+wood_node_amount = 3
+stone_node_amount = 2
+wall_place_wood_cost = 2
+wall_repair_wood_cost = 1
+wall_max_health = 30.0
+hearth_repair_stone_cost = 1
+hearth_repair_amount = 25.0
+debug_damage_amount = 15.0

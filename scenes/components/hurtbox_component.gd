@@ -41,14 +41,23 @@ func on_area_entered(other_area: Area2D) -> void:
 
 	health_component.damage(hitbox_component.damage)
 
-	var floating_text = floating_text_scene.instantiate() as Node2D
-	get_tree().get_first_node_in_group(Groups.FOREGROUND_LAYER).add_child(floating_text)
-	floating_text.global_position = global_position + (Vector2.UP * 16)
-	floating_text.start(str(hitbox_component.damage))
+	var foreground = get_tree().get_first_node_in_group(Groups.FOREGROUND_LAYER)
+	if foreground != null:
+		var floating_text = floating_text_scene.instantiate() as Node2D
+		foreground.add_child(floating_text)
+		floating_text.global_position = global_position + (Vector2.UP * 16)
+		floating_text.start(str(hitbox_component.damage))
 
 	if invulnerability_time > 0.0:
 		_invulnerable = true
 		get_tree().create_timer(invulnerability_time).timeout.connect(_on_invulnerability_ended)
+
+
+func set_invulnerable_for(duration: float) -> void:
+	if duration <= 0.0:
+		return
+	_invulnerable = true
+	get_tree().create_timer(duration).timeout.connect(_on_invulnerability_ended)
 
 
 func _on_invulnerability_ended() -> void:

@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="WaveTable" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://resources/waves/wave_table.gd" id="1_wave"]
+[ext_resource type="PackedScene" path="res://scenes/game_object/enemies/basic_enemy.tscn" id="2_slime"]
+
+[resource]
+script = ExtResource("1_wave")
+enemy_scene = ExtResource("2_slime")
+base_count = 4
+count_per_night = 2
+spawn_interval = 0.4

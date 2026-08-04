@@ -20,6 +20,17 @@ func accelerate_to_player():
 	accelerate_in_direction(direction)
 
 
+func accelerate_to_nearest_target() -> void:
+	var owner_node2d = owner as Node2D
+	if owner_node2d == null:
+		return
+	var target := Targeting.get_nearest_attack_target(get_tree(), owner_node2d.global_position)
+	if target == null:
+		return
+	var direction = (target.global_position - owner_node2d.global_position).normalized()
+	accelerate_in_direction(direction)
+
+
 func accelerate_in_direction(direction: Vector2):
 	var desired_velocity = direction * max_speed
 	velocity = velocity.lerp(desired_velocity, 1 - exp(-acceleration * get_process_delta_time()))

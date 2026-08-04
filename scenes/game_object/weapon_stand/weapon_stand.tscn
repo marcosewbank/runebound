@@ -1,0 +1,49 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scenes/game_object/weapon_stand/weapon_stand.gd" id="1_stand"]
+[ext_resource type="PackedScene" path="res://scenes/components/health_component.tscn" id="2_health"]
+[ext_resource type="PackedScene" path="res://scenes/components/hurtbox_component.tscn" id="3_hurt"]
+[ext_resource type="Texture2D" path="res://assets/sprites/characters/weapons_/weapons_.png" id="4_rack"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
+size = Vector2(16, 16)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hurt"]
+size = Vector2(16, 16)
+
+[node name="WeaponStand" type="StaticBody2D"]
+collision_layer = 1
+collision_mask = 0
+script = ExtResource("1_stand")
+
+[node name="HealthComponent" parent="." instance=ExtResource("2_health")]
+max_health = 40.0
+
+[node name="Fallback" type="Polygon2D" parent="."]
+color = Color(0.35, 0.25, 0.55, 1)
+polygon = PackedVector2Array(-7, 6, -7, -6, 7, -6, 7, 6)
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("4_rack")
+region_enabled = true
+region_rect = Rect2(0, 0, 16, 16)
+
+[node name="Label" type="Label" parent="."]
+offset_left = -20.0
+offset_top = -22.0
+offset_right = 20.0
+offset_bottom = -8.0
+theme_override_font_sizes/font_size = 8
+text = "STAND"
+horizontal_alignment = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_body")
+
+[node name="HurtboxComponent" parent="." node_paths=PackedStringArray("health_component") instance=ExtResource("3_hurt")]
+health_component = NodePath("../HealthComponent")
+team = 0
+invulnerability_time = 0.35
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtboxComponent"]
+shape = SubResource("RectangleShape2D_hurt")
