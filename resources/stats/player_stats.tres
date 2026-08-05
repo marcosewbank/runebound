@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="EntityStats" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/stats/entity_stats.gd" id="1_stats"]
+
+[resource]
+script = ExtResource("1_stats")
+max_health = 10.0
+move_speed = 125.0
+acceleration = 25.0
+damage = 1.0
+attack_rate = 1.0
+pickup_radius = 29.0
+armor = 0.0

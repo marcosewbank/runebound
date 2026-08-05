@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BuildingDef" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://resources/buildings/building_def.gd" id="1_def"]
+[ext_resource type="PackedScene" path="res://scenes/game_object/weapon_stand/weapon_stand.tscn" id="2_stand"]
+
+[resource]
+script = ExtResource("1_def")
+id = &"weapon_stand"
+display_name = "Weapon Stand"
+description = "E nearby to swap Staff/Axe/Dagger."
+wood_cost = 3
+stone_cost = 1
+scene = ExtResource("2_stand")
+ghost_color = Color(0.45, 0.3, 0.7, 0.55)

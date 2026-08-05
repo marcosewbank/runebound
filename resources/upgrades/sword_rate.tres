@@ -1,9 +1,13 @@
-[gd_resource type="Resource" load_steps=2 format=3 uid="uid://2bjb6tn0biae"]
+[gd_resource type="Resource" script_class="StatUpgrade" load_steps=2 format=3 uid="uid://2bjb6tn0biae"]
 
-[ext_resource type="Script" uid="uid://g26oq3oqynkw" path="res://resources/upgrades/ability_upgrade.gd" id="1_pyxp1"]
+[ext_resource type="Script" path="res://resources/upgrades/stat_upgrade.gd" id="1_stat"]
 
 [resource]
-script = ExtResource("1_pyxp1")
+script = ExtResource("1_stat")
 id = "sword_rate"
+max_quantity = 5
 name = "Sword Quickness"
-description = "Increases sword attack rate."
+description = "Increases attack rate by 10%."
+stat_name = &"attack_rate"
+modifier_type = 1
+value_per_stack = 0.1

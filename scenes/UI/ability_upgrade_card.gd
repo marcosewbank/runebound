@@ -13,5 +13,5 @@ func set_ability_upgrade(upgrade: AbilityUpgrade):
 	description_label.text = upgrade.description
 
 func on_gui_input(event: InputEvent):
-	if event.is_action_pressed("left_click"):
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		selected_upgrade.emit()

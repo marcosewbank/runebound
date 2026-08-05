@@ -1,0 +1,21 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scenes/game_object/ballista/ballista_bolt.gd" id="1_bolt"]
+[ext_resource type="PackedScene" path="res://scenes/components/hitbox_component.tscn" id="2_hit"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_hit"]
+radius = 4.0
+
+[node name="BallistaBolt" type="Node2D"]
+script = ExtResource("1_bolt")
+
+[node name="BoltFx" type="Polygon2D" parent="."]
+color = Color(0.85, 0.7, 0.35, 1)
+polygon = PackedVector2Array(-6, -2, 8, 0, -6, 2)
+
+[node name="HitboxComponent" parent="." instance=ExtResource("2_hit")]
+team = 0
+damage = 1.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxComponent"]
+shape = SubResource("CircleShape2D_hit")

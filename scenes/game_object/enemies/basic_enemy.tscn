@@ -1,11 +1,21 @@
-[gd_scene load_steps=9 format=3 uid="uid://mf8s5rtmlxfs"]
+[gd_scene load_steps=14 format=3 uid="uid://mf8s5rtmlxfs"]
 
 [ext_resource type="Texture2D" uid="uid://c48eqjm2ueoou" path="res://assets/sprites/characters/slime_/idle_/lIdle_0.png" id="1_mgruy"]
-[ext_resource type="Script" uid="uid://dlpxih2x5ap5u" path="res://scenes/game_object/enemies/basic_enemy.gd" id="1_obku4"]
+[ext_resource type="Script" path="res://scripts/entities/base_enemy.gd" id="1_obku4"]
 [ext_resource type="PackedScene" uid="uid://dxm8qjdndruup" path="res://scenes/components/health_component.tscn" id="2_8fy8w"]
+[ext_resource type="PackedScene" uid="uid://b7tydag2cla23" path="res://scenes/components/velocity_component.tscn" id="2_he3tq"]
 [ext_resource type="PackedScene" uid="uid://b1usm8rwsm3fd" path="res://scenes/components/experience_component.tscn" id="3_ehc25"]
-[ext_resource type="PackedScene" uid="uid://0mlwj1s0l8lq" path="res://scenes/game_object/experience/experience.tscn" id="4_uidmx"]
 [ext_resource type="PackedScene" uid="uid://bjf5w1vgii4s1" path="res://scenes/components/hurtbox_component.tscn" id="5_ko4sw"]
+[ext_resource type="Shader" uid="uid://bac0k2gqu0dfd" path="res://scenes/components/hit_flash_component.gdshader" id="6_xuf4n"]
+[ext_resource type="PackedScene" uid="uid://gjqu16uvinl7" path="res://scenes/components/hit_flash_component.tscn" id="7_he3tq"]
+[ext_resource type="PackedScene" path="res://scenes/components/stats_component.tscn" id="8_stats"]
+[ext_resource type="PackedScene" uid="uid://c35m2c1uohjie" path="res://scenes/components/hitbox_component.tscn" id="9_hit"]
+[ext_resource type="Resource" path="res://resources/stats/slime_stats.tres" id="10_sstats"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_edv2e"]
+resource_local_to_scene = true
+shader = ExtResource("6_xuf4n")
+shader_parameter/lerp_percent = 0.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ko4sw"]
 size = Vector2(18, 18)
@@ -13,24 +23,46 @@ size = Vector2(18, 18)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_obku4"]
 size = Vector2(12, 11)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hit"]
+size = Vector2(14, 14)
+
 [node name="BasicEnemy" type="CharacterBody2D" groups=["enemy"]]
-collision_layer = 8
-collision_mask = 9
+collision_layer = 4
+collision_mask = 1
 motion_mode = 1
 script = ExtResource("1_obku4")
+
+[node name="StatsComponent" parent="." instance=ExtResource("8_stats")]
+base_stats = ExtResource("10_sstats")
+
+[node name="VelocityComponent" parent="." instance=ExtResource("2_he3tq")]
 
 [node name="HealthComponent" parent="." instance=ExtResource("2_8fy8w")]
 
 [node name="ExperienceComponent" parent="." node_paths=PackedStringArray("health_component") instance=ExtResource("3_ehc25")]
+drop_percent = 1.0
 health_component = NodePath("../HealthComponent")
-experience_scene = ExtResource("4_uidmx")
+
+[node name="HitFlashComponent" parent="." node_paths=PackedStringArray("health_component", "sprite") instance=ExtResource("7_he3tq")]
+health_component = NodePath("../HealthComponent")
+sprite = NodePath("../Sprite2D")
+hit_flash_material = SubResource("ShaderMaterial_edv2e")
 
 [node name="HurtboxComponent" parent="." node_paths=PackedStringArray("health_component") instance=ExtResource("5_ko4sw")]
 health_component = NodePath("../HealthComponent")
+team = 1
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HurtboxComponent"]
 position = Vector2(0, 5)
 shape = SubResource("RectangleShape2D_ko4sw")
+
+[node name="HitboxComponent" parent="." instance=ExtResource("9_hit")]
+team = 1
+damage = 1.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxComponent"]
+position = Vector2(0, 5)
+shape = SubResource("RectangleShape2D_hit")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("1_mgruy")

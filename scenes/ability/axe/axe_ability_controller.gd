@@ -1,22 +1,26 @@
-extends Node
+extends BaseAbilityController
 
 @export var axe_ability_scene: PackedScene
 
-var damage = 10
 
-func _ready():
-	$Timer.timeout.connect(on_timer_timeout)
-	
-func on_timer_timeout():
-	var player = get_tree().get_first_node_in_group("player") as Node2D
-	if player == null:
+func _ready() -> void:
+	base_cooldown = 3.0
+	base_damage = 10.0
+	super._ready()
+
+
+func activate() -> void:
+	if _player == null:
+		_player = get_tree().get_first_node_in_group(Groups.PLAYER) as Node2D
+	if _player == null or axe_ability_scene == null:
 		return
-	var foreground = get_tree().get_first_node_in_group("foreground_layer") as Node2D
+
+	var foreground = get_tree().get_first_node_in_group(Groups.FOREGROUND_LAYER) as Node2D
 	if foreground == null:
 		return
-	
+
 	var axe_instance = axe_ability_scene.instantiate() as Node2D
-	print(axe_instance)
 	foreground.add_child(axe_instance)
-	axe_instance.global_position = player.global_position
-	axe_instance.hitbox_component.damage = damage
+	axe_instance.global_position = _player.global_position
+	axe_instance.hitbox_component.damage = get_damage()
+	axe_instance.hitbox_component.team = HitboxComponent.Team.PLAYER

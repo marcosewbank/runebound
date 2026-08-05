@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://bmcqwsyhtlf6r" path="res://scenes/components/hitbox_component.gd" id="1_okvui"]
 
 [node name="HitboxComponent" type="Area2D"]
-collision_layer = 4
+collision_layer = 8
 collision_mask = 0
+monitoring = false
 script = ExtResource("1_okvui")

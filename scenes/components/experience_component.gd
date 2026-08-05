@@ -1,26 +1,28 @@
 extends Node
+class_name ExperienceComponent
 
-@export_range(0,1) var drop_percent: float = .75
-@export var health_component: Node
+@export_range(0, 1) var drop_percent: float = 0.75
+@export var health_component: HealthComponent
 @export var experience_scene: PackedScene
 
+
 func _ready():
-	(health_component as HealthComponent).died.connect(on_died)
+	health_component.died.connect(on_died)
+
 
 func on_died():
 	if randf() > drop_percent:
 		return
-	
+
 	if experience_scene == null:
 		return
-	
+
 	if not owner is Node2D:
 		return
-	
+
 	var spawn_position = (owner as Node2D).global_position
 	var exp_instance = experience_scene.instantiate() as Node2D
-	
-	var entities_layer = get_tree().get_first_node_in_group("entities_layer")
 
+	var entities_layer = get_tree().get_first_node_in_group(Groups.ENTITIES_LAYER)
 	entities_layer.add_child(exp_instance)
 	exp_instance.global_position = spawn_position

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BuildingDef" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://resources/buildings/building_def.gd" id="1_def"]
+[ext_resource type="PackedScene" path="res://scenes/game_object/player_wall/player_wall.tscn" id="2_wall"]
+
+[resource]
+script = ExtResource("1_def")
+id = &"wooden_wall"
+display_name = "Wooden Wall"
+description = "Blocks and soaks hits."
+wood_cost = 2
+stone_cost = 0
+scene = ExtResource("2_wall")
+ghost_color = Color(0.55, 0.38, 0.18, 0.55)

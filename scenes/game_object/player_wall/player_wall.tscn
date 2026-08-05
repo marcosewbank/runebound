@@ -1,0 +1,34 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scenes/game_object/player_wall/player_wall.gd" id="1_wall"]
+[ext_resource type="PackedScene" path="res://scenes/components/health_component.tscn" id="2_health"]
+[ext_resource type="PackedScene" path="res://scenes/components/hurtbox_component.tscn" id="3_hurt"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
+size = Vector2(16, 16)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hurt"]
+size = Vector2(16, 16)
+
+[node name="PlayerWall" type="StaticBody2D"]
+collision_layer = 1
+collision_mask = 0
+script = ExtResource("1_wall")
+
+[node name="HealthComponent" parent="." instance=ExtResource("2_health")]
+max_health = 30.0
+
+[node name="Visual" type="Polygon2D" parent="."]
+color = Color(0.55, 0.38, 0.18, 1)
+polygon = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_body")
+
+[node name="HurtboxComponent" parent="." node_paths=PackedStringArray("health_component") instance=ExtResource("3_hurt")]
+health_component = NodePath("../HealthComponent")
+team = 0
+invulnerability_time = 0.35
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtboxComponent"]
+shape = SubResource("RectangleShape2D_hurt")
