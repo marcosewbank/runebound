@@ -80,6 +80,7 @@ func _handle_day_death() -> void:
 	died_during_day = true
 	if phase_manager != null:
 		phase_manager.day_deaths += 1
+	AchievementStore.evaluate_day_death()
 	_set_hero_disabled(true)
 	_show_status("Fallen — Night comes unprepared")
 	await get_tree().create_timer(day_death_stub_seconds).timeout

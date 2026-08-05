@@ -31,4 +31,12 @@ func _apply_stats() -> void:
 
 func on_died() -> void:
 	# ExperienceComponent already reacted to died (connected in its _ready first).
+	_drop_scrap()
 	queue_free()
+
+
+func _drop_scrap() -> void:
+	for node in get_tree().get_nodes_in_group(Groups.PLAYER_INVENTORY):
+		if node is PlayerInventory:
+			(node as PlayerInventory).add_scrap(1)
+			return

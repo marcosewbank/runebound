@@ -35,6 +35,7 @@ var _run_ended: bool = false
 
 
 func _ready() -> void:
+	AchievementStore.begin_run()
 	_build_ground()
 	_build_frames()
 	_place_entities()
@@ -45,6 +46,7 @@ func _ready() -> void:
 	_wire_night_wave()
 	_wire_hero_death()
 	_wire_hearth_death()
+	_wire_achievements()
 	_update_phase_label()
 	_update_inventory_label()
 	_update_weapon_label()
@@ -120,6 +122,20 @@ func _wire_hearth_death() -> void:
 	hearth_health.died.connect(_on_hearth_died)
 
 
+func _wire_achievements() -> void:
+	phase_manager.wave_cleared.connect(_on_wave_cleared_achievements)
+
+
+func _on_wave_cleared_achievements() -> void:
+	# `cleared_while_hero_down` is set by HeroDeathManager before/with wave_cleared handling.
+	var while_down := (
+		hero_death_manager.is_downed
+		or hero_death_manager.cleared_wave_while_downed
+		or phase_manager.cleared_while_hero_down
+	)
+	AchievementStore.evaluate_after_night(phase_manager.nights_survived, while_down)
+
+
 func _on_hearth_died() -> void:
 	if _run_ended:
 		return
@@ -130,6 +146,10 @@ func _on_hearth_died() -> void:
 	end_screen.process_mode = Node.PROCESS_MODE_WHEN_PAUSED
 	add_child(end_screen)
 	end_screen.set_defeat()
+	end_screen.show_run_summary(
+		phase_manager.nights_survived,
+		AchievementStore.newly_unlocked_this_run.duplicate()
+	)
 
 
 func _on_phase_changed(_phase: PhaseManager.Phase) -> void:
@@ -146,7 +166,9 @@ func _update_phase_label() -> void:
 
 
 func _update_inventory_label() -> void:
-	inventory_label.text = "Wood: %d   Stone: %d" % [inventory.wood, inventory.stone]
+	inventory_label.text = "Wood: %d   Stone: %d   Scrap: %d" % [
+		inventory.wood, inventory.stone, inventory.scrap
+	]
 
 
 func _update_weapon_label() -> void:

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BuildingDef" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://resources/buildings/building_def.gd" id="1_def"]
+[ext_resource type="PackedScene" path="res://scenes/game_object/floor_trap/floor_trap.tscn" id="2_trap"]
+
+[resource]
+script = ExtResource("1_def")
+id = &"floor_trap"
+display_name = "Floor Trap"
+description = "Chips and slows enemies that walk over it."
+wood_cost = 1
+stone_cost = 1
+scene = ExtResource("2_trap")
+ghost_color = Color(0.55, 0.2, 0.15, 0.55)

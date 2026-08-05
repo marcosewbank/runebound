@@ -84,8 +84,8 @@ func clear_wave() -> void:
 	if phase != Phase.NIGHT:
 		return
 	_phase_timer.stop()
-	wave_cleared.emit()
 	nights_survived += 1
+	wave_cleared.emit()
 	_set_phase(Phase.DAWN)
 	_phase_timer.start(dawn_stub_seconds)
 

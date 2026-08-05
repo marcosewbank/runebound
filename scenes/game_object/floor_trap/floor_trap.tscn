@@ -1,0 +1,35 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/game_object/floor_trap/floor_trap.gd" id="1_trap"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_area"]
+size = Vector2(14, 14)
+
+[node name="FloorTrap" type="Area2D"]
+collision_layer = 0
+collision_mask = 4
+monitoring = true
+monitorable = false
+script = ExtResource("1_trap")
+chip_damage = 1.0
+tick_interval = 0.85
+
+[node name="Visual" type="Polygon2D" parent="."]
+color = Color(0.55, 0.2, 0.15, 0.75)
+polygon = PackedVector2Array(-7, -7, 7, -7, 7, 7, -7, 7)
+
+[node name="Spike" type="Polygon2D" parent="."]
+color = Color(0.75, 0.55, 0.35, 0.9)
+polygon = PackedVector2Array(-3, 2, 0, -5, 3, 2)
+
+[node name="Label" type="Label" parent="."]
+offset_left = -16.0
+offset_top = -18.0
+offset_right = 16.0
+offset_bottom = -4.0
+theme_override_font_sizes/font_size = 8
+text = "TRAP"
+horizontal_alignment = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_area")

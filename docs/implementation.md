@@ -19,8 +19,8 @@ Invoke coding with **`/implement-slice`** (one slice at a time).
 | 5 | Hero controls + staff, then axe/dagger + swap | Done |
 | 5b | Combat VFX + build menu / Weapon Stand | Done |
 | 6 | Hero death rules | Done |
-| 7 | Achievements stub + end screen | Not started |
-| 8 | Ballista / trap / scrap | Not started |
+| 7 | Achievements stub + end screen | Done |
+| 8 | Ballista / trap / scrap | Done |
 
 ---
 
@@ -213,11 +213,16 @@ Invoke coding with **`/implement-slice`** (one slice at a time).
 
 **Build**
 
-- [ ] Persist flags: night 1 / 3 / 5 survived; day-death; clear while hero down.
-- [ ] End screen lists nights survived + newly unlocked achievements.
-- [ ] Scrap drop stub optional here or with Slice 8.
+- [x] Persist flags: night 1 / 3 / 5 survived; day-death; clear while hero down.
+- [x] End screen lists nights survived + newly unlocked achievements.
+- [x] Scrap drop stub optional here or with Slice 8.
 
 **Done means:** Two runs can show a newly unlocked achievement.
+
+**Notes:**
+- Autoload `AchievementStore` → `user://runebound_achievements.cfg`.
+- Unlocks on wave clear / day death; end screen shows nights + **new** unlocks for that run.
+- Scrap deferred to Slice 8.
 
 ---
 
@@ -225,12 +230,18 @@ Invoke coding with **`/implement-slice`** (one slice at a time).
 
 **Build**
 
-- [ ] Weak ballista (chip only — tune so it does not solo Swarmers).
-- [ ] Floor trap (chip + slow).
-- [ ] Enemies drop **scrap** (no recipes yet).
-- [ ] Banner/shrine optional — skip if timeboxed.
+- [x] Weak ballista (chip only — tune so it does not solo Swarmers).
+- [x] Floor trap (chip + slow).
+- [x] Enemies drop **scrap** (no recipes yet).
+- [x] Banner/shrine optional — skip if timeboxed.
 
 **Done means:** Place ballista + trap; scrap appears in inventory; night still needs the hero.
+
+**Notes (playtest / follow-ups):**
+- Ballista: 1 dmg / 1.4s, range 120 — slime HP 10 so it chips only; in `BUILDING` group (enemies can chew it).
+- Floor trap: Area2D chip + `VelocityComponent.apply_slow`; not a soak target.
+- Scrap: +1 to inventory on enemy death; HUD shows Scrap (no spend recipes yet).
+- Build catalog: Wall / Stand / Ballista (4W 2S) / Trap (1W 1S). Banner/shrine skipped.
 
 ---
 

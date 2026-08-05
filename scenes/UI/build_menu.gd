@@ -20,6 +20,8 @@ func _ready() -> void:
 		catalog = [
 			load("res://resources/buildings/wooden_wall.tres") as BuildingDef,
 			load("res://resources/buildings/weapon_stand.tres") as BuildingDef,
+			load("res://resources/buildings/ballista.tres") as BuildingDef,
+			load("res://resources/buildings/floor_trap.tres") as BuildingDef,
 		]
 	visible = false
 	_rebuild_list()

@@ -5,6 +5,11 @@ signal changed
 
 var wood: int = 0
 var stone: int = 0
+var scrap: int = 0
+
+
+func _ready() -> void:
+	add_to_group(Groups.PLAYER_INVENTORY)
 
 
 func add_wood(amount: int) -> void:
@@ -14,6 +19,11 @@ func add_wood(amount: int) -> void:
 
 func add_stone(amount: int) -> void:
 	stone += amount
+	changed.emit()
+
+
+func add_scrap(amount: int) -> void:
+	scrap += amount
 	changed.emit()
 
 
